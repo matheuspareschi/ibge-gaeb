@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Levantamento GAEB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f1e9; --card:#fffdf9; --ink:#2b2823; --muted:#6f685d; --line:#e2d9cb;
+  --accent:#4f6b5a; --accent-ink:#fff; --accent-soft:#e4ece6; --warn:#a4452c;
+  --serif:'Fraunces',Georgia,serif; --sans:'Inter',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#1c1b18;--card:#252320;--ink:#ece6da;--muted:#a39b8d;--line:#3a362f;--accent:#8fb59c;--accent-ink:#17201a;--accent-soft:#2a352d;--warn:#e08a70}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;min-height:100vh}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 80px}
+.bar{position:sticky;top:0;background:var(--bg);padding:12px 0 10px;z-index:5}
+.bar .meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px}
+.track{height:4px;background:var(--line);border-radius:4px;overflow:hidden}
+.fill{height:100%;background:var(--accent);width:0;transition:width .35s}
+h1,h2{font-family:var(--serif);font-weight:500;line-height:1.2;margin:0}
+h1{font-size:34px;margin:28px 0 8px}
+h2{font-size:27px;margin:20px 0 6px}
+.kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.lead{color:var(--muted);margin:4px 0 18px}
+.intro{background:var(--accent-soft);border-radius:12px;padding:14px 16px;margin:10px 0 18px;font-size:15.5px}
+.sec{margin:26px 0}
+.sec h3{font-family:var(--serif);font-weight:500;font-size:20px;margin:0 0 6px}
+.verso{border-left:3px solid var(--accent);padding:4px 0 4px 14px;font-family:var(--serif);font-size:19px;margin:10px 0}
+.verso small{display:block;font-family:var(--sans);font-size:13px;color:var(--muted);margin-top:4px}
+.q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 16px;margin:14px 0}
+.q .tag{font-size:12px;color:var(--muted);margin-bottom:4px}
+.q p.t{margin:0 0 12px;font-weight:500}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.opts{display:flex;flex-direction:column;gap:8px}
+label.o,button.sc{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:11px 12px;cursor:pointer;font:inherit;color:inherit;text-align:left;width:100%}
+button.sc{justify-content:center;align-items:center;text-align:center;font-size:13px;line-height:1.25;padding:10px 4px;min-height:58px}
+label.o:hover,button.sc:hover{border-color:var(--accent)}
+label.o.on,button.sc.on{background:var(--accent-soft);border-color:var(--accent)}
+label.o input{margin-top:4px;accent-color:var(--accent);flex:none}
+label.o.dim{opacity:.45;cursor:not-allowed}
+.other{display:none;margin:-2px 0 0 0}
+.other.show{display:block}
+input[type=text],textarea{width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea{min-height:72px;resize:vertical}
+details.cm{margin-top:12px}
+details.cm summary{cursor:pointer;color:var(--muted);font-size:14px}
+details.cm textarea{margin-top:8px}
+.hint{font-size:13px;color:var(--muted);margin:6px 0 0}
+.nav{display:flex;gap:10px;justify-content:space-between;margin-top:26px}
+button.btn{font:inherit;font-weight:600;border-radius:999px;padding:12px 26px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink)}
+button.btn.ghost{background:transparent;color:var(--accent)}
+button.btn:disabled{opacity:.5;cursor:default}
+.err{color:var(--warn);font-size:15px;margin-top:12px}
+.pausa{font-family:var(--serif);font-size:22px;margin:6px 0 18px}
+.hp{position:absolute;left:-9999px;height:0;width:0;opacity:0}
+.center{text-align:center}
+.small{font-size:14px;color:var(--muted)}
+@media (max-width:520px){
+  .scale{grid-template-columns:1fr}
+  button.sc{min-height:0;padding:11px 12px;justify-content:flex-start;text-align:left;font-size:16px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar" id="bar" hidden>
+    <div class="meta"><span id="crumb"></span><span id="count"></span></div>
+    <div class="track"><div class="fill" id="fill"></div></div>
+  </div>
+  <main id="app"></main>
+</div>
+<script src="perguntas.js"></script>
+<script>
+(function(){
+"use strict";
+var CFG=window.GAEB_CONFIG, ESC=window.GAEB_ESCALAS, BLOCOS=window.GAEB_BLOCOS;
+var app=document.getElementById('app'), bar=document.getElementById('bar');
+
+// ---- achatar telas ----
+var telas=[]; // {bloco, tema, sub, intro}
+BLOCOS.forEach(function(b){
+  var first=true;
+  b.temas.forEach(function(t){
+    t.subareas.forEach(function(s){
+      telas.push({bloco:b,tema:t,sub:s,intro:first?b.intro:null});
+      first=false;
+    });
+  });
+});
+var totalItens=0;
+telas.forEach(function(t){t.sub.itens.forEach(function(it,i){it.id=t.sub.id+'-'+(i+1);totalItens++;});});
+
+// ---- estado + salvamento local ----
+var KEY='gaeb-levantamento-'+CFG.anoLevantamento;
+var S={nome:'',passo:-1,r:{},c:{},o:{}}; // passo -1 abertura, 0..n-1 telas, n fim
+function salvar(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function carregar(){try{var x=localStorage.getItem(KEY);return x?JSON.parse(x):null;}catch(e){return null;}}
+function limpar(){try{localStorage.removeItem(KEY);}catch(e){}}
+
+// ---- helpers ----
+function el(tag,attrs,kids){
+  var e=document.createElement(tag);
+  for(var k in (attrs||{})){
+    if(k==='class')e.className=attrs[k];
+    else if(k==='html')e.innerHTML=attrs[k];
+    else if(k.slice(0,2)==='on')e.addEventListener(k.slice(2),attrs[k]);
+    else if(attrs[k]===true)e.setAttribute(k,'');
+    else if(attrs[k]!==false&&attrs[k]!=null)e.setAttribute(k,attrs[k]);
+  }
+  (kids||[]).forEach(function(c){if(c==null)return;e.appendChild(typeof c==='string'?document.createTextNode(c):c);});
+  return e;
+}
+function limparApp(){app.innerHTML='';window.scrollTo(0,0);}
+function secoes(lista){
+  var frag=document.createDocumentFragment();
+  lista.forEach(function(s,i){
+    var d=el('div',{class:'sec'},[el('h3',{},[(i+1)+'. '+s.titulo])]);
+    if(s.texto)s.texto.forEach(function(p){d.appendChild(el('p',{},[p]));});
+    if(s.verso)d.appendChild(el('div',{class:'verso'},[s.verso,el('small',{},[s.ref])]));
+    if(s.oracao)d.appendChild(el('p',{class:'small'},[s.oracao]));
+    frag.appendChild(d);
+  });
+  return frag;
+}
+function barra(){
+  var n=S.passo;
+  if(n<0||n>=telas.length){bar.hidden=true;return;}
+  bar.hidden=false;
+  var t=telas[n];
+  document.getElementById('crumb').textContent=t.bloco.titulo+' · '+t.tema.titulo;
+  document.getElementById('count').textContent=(n+1)+' de '+telas.length;
+  document.getElementById('fill').style.width=((n)/telas.length*100)+'%';
+}
+
+// ---- abertura ----
+function abertura(){
+  S.passo=-1;barra();limparApp();
+  var A=window.GAEB_ABERTURA;
+  app.appendChild(el('div',{class:'kicker'},['Levantamento Espiritual GAEB']));
+  app.appendChild(el('h1',{},[A.titulo]));
+  app.appendChild(el('p',{class:'pausa'},[A.pausa]));
+  app.appendChild(secoes(A.secoes));
+  app.appendChild(el('p',{class:'small'},[A.dica]));
+  var nome=el('input',{type:'text',id:'nome',autocomplete:'off',placeholder:'Seu nome',value:S.nome||''});
+  var erro=el('div',{class:'err',role:'alert'});
+  app.appendChild(el('div',{class:'sec'},[el('h3',{},['Seu nome']),
+    el('p',{class:'small'},['Só os líderes que vão ler as respostas verão o seu nome.']),nome,erro]));
+  app.appendChild(el('div',{class:'nav'},[el('span'),el('button',{class:'btn',onclick:function(){
+    var v=nome.value.trim();
+    if(!v){erro.textContent='Escreva seu nome para começar.';nome.focus();return;}
+    S.nome=v;S.passo=0;salvar();tela();
+  }},['Começar'])]));
+}
+
+// ---- telas de perguntas ----
+function tela(){
+  var n=S.passo;
+  if(n>=telas.length)return fim();
+  barra();limparApp();
+  var t=telas[n];
+  app.appendChild(el('div',{class:'kicker'},[t.bloco.titulo+' · '+t.tema.titulo]));
+  app.appendChild(el('h2',{},[t.sub.titulo]));
+  if(t.intro)app.appendChild(el('div',{class:'intro'},[t.intro]));
+  t.sub.itens.forEach(function(it){app.appendChild(pergunta(it));});
+  app.appendChild(el('div',{class:'nav'},[
+    el('button',{class:'btn ghost',onclick:function(){salvar();if(n===0)abertura();else{S.passo=n-1;tela();}}},['Voltar']),
+    el('button',{class:'btn',onclick:function(){S.passo=n+1;salvar();tela();}},[n===telas.length-1?'Concluir':'Continuar'])
+  ]));
+}
+var TIPOS={F:'Com que frequência?',C:'O quanto você concorda?',S:'Escolha a que mais se parece com você',M:'Marque todas que combinam'};
+function pergunta(it){
+  var box=el('section',{class:'q'});
+  var tag=TIPOS[it.t]; if(it.t==='M'&&it.max)tag='Marque até '+it.max;
+  box.appendChild(el('div',{class:'tag'},[tag]));
+  box.appendChild(el('p',{class:'t'},[it.q]));
+  if(it.t==='F'||it.t==='C'){
+    var g=el('div',{class:'scale'});
+    ESC[it.t].forEach(function(lab){
+      var b=el('button',{type:'button',class:'sc'+(S.r[it.id]===lab?' on':''),onclick:function(){
+        S.r[it.id]=(S.r[it.id]===lab?undefined:lab);salvar();
+        Array.prototype.forEach.call(g.children,function(x){x.classList.toggle('on',S.r[it.id]===x.textContent);});
+      }},[lab]);
+      g.appendChild(b);
+    });
+    box.appendChild(g);
+  }else{
+    var multi=it.t==='M';
+    var lista=it.opcoes.slice(); if(it.outra!==false)lista.push('Outra');
+    var cur=S.r[it.id]; if(multi&&!Array.isArray(cur))cur=[];
+    var wrap=el('div',{class:'opts'});
+    var outro=el('div',{class:'other'},[el('input',{type:'text',placeholder:'Outra: escreva aqui',value:S.o[it.id]||'',
+      oninput:function(e){S.o[it.id]=e.target.value;salvar();}})]);
+    function refresh(){
+      var sel=S.r[it.id];
+      var arr=multi?(sel||[]):(sel?[sel]:[]);
+      Array.prototype.forEach.call(wrap.children,function(lb){
+        var v=lb.getAttribute('data-v');
+        var on=arr.indexOf(v)>=0;
+        lb.classList.toggle('on',on);
+        lb.querySelector('input').checked=on;
+        var blocked=multi&&it.max&&!on&&arr.length>=it.max;
+        lb.classList.toggle('dim',!!blocked);
+        lb.querySelector('input').disabled=!!blocked;
+      });
+      outro.classList.toggle('show',arr.indexOf('Outra')>=0);
+    }
+    lista.forEach(function(op){
+      var inp=el('input',{type:multi?'checkbox':'radio',name:it.id});
+      var lb=el('label',{class:'o','data-v':op},[inp,el('span',{},[op==='Outra'?'Outra: ______':op])]);
+      inp.addEventListener('change',function(){
+        if(multi){
+          var a=Array.isArray(S.r[it.id])?S.r[it.id].slice():[];
+          var i=a.indexOf(op);
+          if(i>=0)a.splice(i,1);else{if(it.max&&a.length>=it.max){refresh();return;}a.push(op);}
+          S.r[it.id]=a;
+        }else S.r[it.id]=op;
+        salvar();refresh();
+      });
+      wrap.appendChild(lb);
+    });
+    box.appendChild(wrap);box.appendChild(outro);
+    refresh();
+  }
+  // comentário opcional
+  var ta=el('textarea',{placeholder:it.guia||'Escreva aqui, se quiser.',oninput:function(e){S.c[it.id]=e.target.value;salvar();}});
+  ta.value=S.c[it.id]||'';
+  var det=el('details',{class:'cm'},[el('summary',{},[it.guia?('Comentar · '+it.guia):'Quer comentar? (opcional)']),ta]);
+  if(S.c[it.id])det.open=true;
+  box.appendChild(det);
+  return box;
+}
+
+// ---- fim e envio ----
+function fim(){
+  S.passo=telas.length;barra();limparApp();
+  var E=window.GAEB_ENCERRAMENTO;
+  app.appendChild(el('div',{class:'kicker'},['Levantamento Espiritual GAEB']));
+  app.appendChild(el('h1',{},[E.titulo]));
+  app.appendChild(el('p',{class:'pausa'},[E.pausa]));
+  app.appendChild(secoes(E.secoes));
+  app.appendChild(el('p',{},[E.agradecimento]));
+  var hp=el('input',{type:'text',class:'hp',tabindex:'-1',autocomplete:'off','aria-hidden':'true',id:'hp'});
+  app.appendChild(hp);
+  var msg=el('div',{class:'err',role:'alert'});
+  var btn=el('button',{class:'btn',onclick:enviar},['Enviar minhas respostas']);
+  app.appendChild(el('div',{class:'nav'},[
+    el('button',{class:'btn ghost',onclick:function(){S.passo=telas.length-1;salvar();tela();}},['Voltar']),btn]));
+  app.appendChild(msg);
+  app.appendChild(el('p',{class:'small'},['Ao enviar, suas respostas chegam só aos líderes. Se a conexão falhar, nada se perde: é só tentar de novo.']));
+
+  function enviar(){
+    if(hp.value){return;} // robô
+    if(!CFG.formspree||CFG.formspree.indexOf('COLE_AQUI')===0){msg.textContent='A página ainda não foi ligada ao envio. Avise um dos líderes.';return;}
+    btn.disabled=true;btn.textContent='Enviando…';msg.textContent='';
+    var corpo={nome:S.nome,_subject:CFG.assunto+' — '+S.nome,respostas:texto(),enviado_em:new Date().toISOString()};
+    fetch(CFG.formspree,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},body:JSON.stringify(corpo)})
+      .then(function(r){if(!r.ok)throw new Error('http '+r.status);limpar();obrigado();})
+      .catch(function(){btn.disabled=false;btn.textContent='Tentar enviar de novo';msg.textContent='Não consegui enviar agora. Suas respostas estão guardadas neste aparelho. Confira a internet e tente de novo.';});
+  }
+}
+function texto(){
+  var L=[],n=0;
+  telas.forEach(function(t){
+    L.push('','=== '+t.bloco.titulo+' · '+t.tema.titulo+' · '+t.sub.titulo+' ===');
+    t.sub.itens.forEach(function(it){
+      n++;
+      var r=S.r[it.id],resp;
+      if(Array.isArray(r))resp=r.length?r.map(function(x){return x==='Outra'?'Outra: '+(S.o[it.id]||'(sem texto)'):x;}).join(' | '):'(sem resposta)';
+      else if(r)resp=(r==='Outra')?'Outra: '+(S.o[it.id]||'(sem texto)'):r;
+      else resp='(sem resposta)';
+      L.push('');
+      L.push(String(n).padStart(2,'0')+' ['+it.t+'] '+it.q);
+      L.push('   → '+resp);
+      if(S.c[it.id]&&S.c[it.id].trim())L.push('   Comentário: '+S.c[it.id].trim());
+    });
+  });
+  return L.join('\n');
+}
+function obrigado(){
+  bar.hidden=true;limparApp();
+  app.appendChild(el('div',{class:'center'},[
+    el('h1',{},['Enviado. Obrigado!']),
+    el('p',{class:'lead'},['Suas respostas chegaram aos líderes. Deus já conhecia cada uma delas, e o amor dele por você não mudou.']),
+    el('p',{class:'small'},['Pode fechar esta página. Se este for um aparelho compartilhado, nada fica guardado aqui.'])
+  ]));
+}
+
+// ---- início: retomar? ----
+var salvo=carregar();
+if(salvo&&salvo.nome&&(salvo.passo>=0)){
+  S=salvo;
+  limparApp();
+  app.appendChild(el('h1',{},['Olá, '+S.nome]));
+  app.appendChild(el('p',{class:'lead'},['Você já começou o levantamento neste aparelho. Quer continuar de onde parou?']));
+  app.appendChild(el('div',{class:'nav'},[
+    el('button',{class:'btn ghost',onclick:function(){if(confirm('Apagar o que foi respondido e começar do zero?')){limpar();S={nome:'',passo:-1,r:{},c:{},o:{}};abertura();}}},['Começar de novo']),
+    el('button',{class:'btn',onclick:function(){S.passo>=telas.length?fim():tela();}},['Continuar'])
+  ]));
+}else abertura();
+})();
+</script>
+</body>
+</html>
