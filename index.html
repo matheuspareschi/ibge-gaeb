@@ -106,6 +106,7 @@ button.btn{min-height:56px;padding:0 48px;border-radius:999px;border:0;color:var
 button.btn.ghost{background:var(--ghost-bg);color:var(--accent);border:1px solid var(--accent);padding:0 28px;box-shadow:none;font-size:19px}
 button.btn:disabled{opacity:.5;cursor:default}
 button.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.aviso{text-align:right;margin-top:-8px}
 .err{color:var(--warn);font-size:16px;min-height:1px}
 .hp{position:absolute;left:-9999px;height:0;width:0;opacity:0}
 @media (max-width:760px){
@@ -181,6 +182,14 @@ function novoGradiente(){
     root.setProperty('--x'+(i+1),x.toFixed(0)+'%');root.setProperty('--y'+(i+1),y.toFixed(0)+'%');
   });
 }
+var verificar=function(){};
+function respondido(it){
+  var r=S.r[it.id];
+  if(it.t==='M'){if(!Array.isArray(r)||!r.length)return false;if(r.indexOf('Outra')>=0&&!(S.o[it.id]||'').trim())return false;return true;}
+  if(!r)return false;
+  if(r==='Outra'&&!(S.o[it.id]||'').trim())return false;
+  return true;
+}
 function limparApp(){app.innerHTML='';window.scrollTo(0,0);novoGradiente();}
 function dots(n,total){
   var d=el('div',{class:'dots','aria-label':'Passo '+(n+1)+' de '+total});
@@ -251,10 +260,19 @@ function tela(){
   var qs=el('div',{class:'qs'});
   if(t.intro)qs.appendChild(el('div',{class:'intro'},[t.intro]));
   t.sub.itens.forEach(function(it){qs.appendChild(pergunta(it));});
+  var proximo=el('button',{class:'btn',onclick:function(){if(proximo.disabled)return;S.passo=n+1;salvar();tela();}},[n===telas.length-1?'Concluir':'Continuar']);
+  var aviso=el('div',{class:'small aviso',role:'status'});
   qs.appendChild(el('div',{class:'nav sp'},[
     el('button',{class:'btn ghost',onclick:function(){salvar();if(n===0){S.ab=3;abertura();}else{S.passo=n-1;tela();}}},['Voltar']),
-    el('button',{class:'btn',onclick:function(){S.passo=n+1;salvar();tela();}},[n===telas.length-1?'Concluir':'Continuar'])
+    proximo
   ]));
+  qs.appendChild(aviso);
+  verificar=function(){
+    var falta=t.sub.itens.filter(function(it){return !respondido(it);}).length;
+    proximo.disabled=falta>0;
+    aviso.textContent=falta>0?(falta===1?'Falta responder 1 pergunta para continuar.':'Faltam '+falta+' perguntas para continuar.'):'';
+  };
+  verificar();
   app.appendChild(el('div',{class:'split'},[side,qs]));
 }
 var TIPOS={F:'Com que frequência?',C:'O quanto você concorda?',S:'Escolha a que mais se parece com você',M:'Marque todas que combinam'};
@@ -267,7 +285,7 @@ function pergunta(it){
     var g=el('div',{class:'scale'});
     ESC[it.t].forEach(function(lab){
       var b=el('button',{type:'button',class:'sc'+(S.r[it.id]===lab?' on':''),onclick:function(){
-        S.r[it.id]=(S.r[it.id]===lab?undefined:lab);salvar();
+        S.r[it.id]=(S.r[it.id]===lab?undefined:lab);salvar();verificar();
         Array.prototype.forEach.call(g.children,function(x){x.classList.toggle('on',S.r[it.id]===x.textContent);});
       }},[lab]);
       g.appendChild(b);
@@ -279,7 +297,7 @@ function pergunta(it){
     var cur=S.r[it.id]; if(multi&&!Array.isArray(cur))cur=[];
     var wrap=el('div',{class:'opts'});
     var outro=el('div',{class:'other'},[el('input',{type:'text',placeholder:'Outra: escreva aqui',value:S.o[it.id]||'',
-      oninput:function(e){S.o[it.id]=e.target.value;salvar();}})]);
+      oninput:function(e){S.o[it.id]=e.target.value;salvar();verificar();}})]);
     function refresh(){
       var sel=S.r[it.id];
       var arr=multi?(sel||[]):(sel?[sel]:[]);
@@ -293,6 +311,7 @@ function pergunta(it){
         lb.querySelector('input').disabled=!!blocked;
       });
       outro.classList.toggle('show',arr.indexOf('Outra')>=0);
+      verificar();
     }
     lista.forEach(function(op){
       var inp=el('input',{type:multi?'checkbox':'radio',name:it.id});
