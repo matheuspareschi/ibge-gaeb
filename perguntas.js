@@ -13,7 +13,7 @@
 
 window.GAEB_CONFIG = {
   // Cole aqui o endereço do seu formulário no Formspree (https://formspree.io/f/xxxxxxxx)
-  formspree: "COLE_AQUI_O_ENDERECO_DO_FORMSPREE",
+  formspree: "https://formspree.io/f/xoedjlvq",
   assunto: "Levantamento Espiritual GAEB — nova resposta",
   anoLevantamento: 2026
 };
