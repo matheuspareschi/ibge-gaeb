@@ -78,7 +78,7 @@ window.GAEB_ENCERRAMENTO = {
 // Reserva (voltam só se sobrar espaço): "Oro em voz alta com alguém".
 // Caráter (nomes dos aspectos NÃO aparecem no formulário): ficam 4 frutos, em ordem: Alegria, Paz, Mansidão, Domínio próprio
 // (campo "mapa" de cada item). Saíram Amor, Paciência, Benignidade, Bondade e Fidelidade, por serem mais ligados ao trato com os outros.
-// Tipo T = texto livre, com mínimo de caracteres (campo "min").
+// Tipo T = texto livre, com mínimo de 50 caracteres (campo "min").
 
 window.GAEB_BLOCOS = [
   {
@@ -606,12 +606,12 @@ window.GAEB_BLOCOS = [
             "itens": [
               {
                 "t": "T",
-                "min": 100,
+                "min": 50,
                 "q": "O que você mudaria, acrescentaria ou melhoraria no GAEB? Pode ser sobre a programação, o ambiente, as pessoas ou qualquer outra coisa."
               },
               {
                 "t": "T",
-                "min": 100,
+                "min": 50,
                 "q": "Conte algo em que o GAEB já ajudou você (na sua fé, numa decisão, numa amizade ou num momento difícil)."
               }
             ]
