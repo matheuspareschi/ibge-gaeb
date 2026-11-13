@@ -76,8 +76,9 @@ window.GAEB_ENCERRAMENTO = {
 // Itens retirados (guardados em reserva/perguntas-completo-71.js): esperança na vida eterna,
 // serviço, evangelismo, relacionamentos gerais e alguns itens de oração, Palavra, adoração e GAEB.
 // Reserva (voltam só se sobrar espaço): "Oro em voz alta com alguém".
-// Mapa do Caráter (nomes NÃO aparecem no formulário): 1 Amor · 2 Alegria · 3 Paz · 4 Paciência ·
-// 5 Benignidade · 6 Bondade · 7 Fidelidade · 8 Mansidão · 9 Domínio próprio (campo "mapa" de cada item).
+// Caráter (nomes dos aspectos NÃO aparecem no formulário): ficam 4 frutos, em ordem: Alegria, Paz, Mansidão, Domínio próprio
+// (campo "mapa" de cada item). Saíram Amor, Paciência, Benignidade, Bondade e Fidelidade, por serem mais ligados ao trato com os outros.
+// Tipo T = texto livre, com mínimo de caracteres (campo "min").
 
 window.GAEB_BLOCOS = [
   {
@@ -369,20 +370,8 @@ window.GAEB_BLOCOS = [
         "subareas": [
           {
             "id": "car-1",
-            "titulo": "Pessoas e dias difíceis",
+            "titulo": "Alegria e paz",
             "itens": [
-              {
-                "t": "S",
-                "mapa": "1 Amor",
-                "q": "Quando alguém do grupo é difícil de gostar, o que mais se parece comigo é:",
-                "opcoes": [
-                  "Evito essa pessoa",
-                  "Sou educado, mas mantenho distância",
-                  "Converso normalmente, mesmo sem afinidade",
-                  "Procuro fazer o bem a ela, mesmo sem vontade",
-                  "Não tenho ninguém assim"
-                ]
-              },
               {
                 "t": "F",
                 "mapa": "2 Alegria",
@@ -404,47 +393,8 @@ window.GAEB_BLOCOS = [
           },
           {
             "id": "car-2",
-            "titulo": "Com os outros",
+            "titulo": "Humildade e domínio próprio",
             "itens": [
-              {
-                "t": "S",
-                "mapa": "4 Paciência",
-                "q": "Quando alguém me irrita ou demora a entender, o que mais se parece comigo é:",
-                "opcoes": [
-                  "Explodo ou respondo mal",
-                  "Seguro por fora, mas fico irritado por dentro",
-                  "Respiro e espero, mesmo com esforço",
-                  "Consigo esperar sem me irritar"
-                ]
-              },
-              {
-                "t": "F",
-                "mapa": "5 Benignidade",
-                "q": "Trato com gentileza até quem não é meu amigo próximo."
-              },
-              {
-                "t": "S",
-                "mapa": "6 Bondade",
-                "q": "Quando vejo alguém precisando de ajuda, o que mais se parece comigo é:",
-                "opcoes": [
-                  "Nem costumo notar",
-                  "Noto, mas não faço nada",
-                  "Ajudo se a pessoa pedir",
-                  "Ajudo quando é alguém que conheço",
-                  "Ajudo mesmo sem ninguém pedir"
-                ]
-              }
-            ]
-          },
-          {
-            "id": "car-3",
-            "titulo": "Compromisso e controle",
-            "itens": [
-              {
-                "t": "F",
-                "mapa": "7 Fidelidade",
-                "q": "Cumpro o que combinei, mesmo quando ninguém está cobrando."
-              },
               {
                 "t": "S",
                 "mapa": "8 Mansidão",
@@ -577,8 +527,7 @@ window.GAEB_BLOCOS = [
                   "Discussões em grupos pequenos",
                   "Tempo livre",
                   "Conversas individuais"
-                ],
-                "guia": "O que você mudaria ou acrescentaria no GAEB?"
+                ]
               },
               {
                 "t": "M",
@@ -648,6 +597,22 @@ window.GAEB_BLOCOS = [
                 "t": "C",
                 "q": "No GAEB, sinto que minha opinião conta e que posso escolher como participar.",
                 "mapa": "SDT: autonomia."
+              }
+            ]
+          },
+          {
+            "id": "gaeb-livre",
+            "titulo": "Com as suas palavras",
+            "itens": [
+              {
+                "t": "T",
+                "min": 100,
+                "q": "O que você mudaria, acrescentaria ou melhoraria no GAEB? Pode ser sobre a programação, o ambiente, as pessoas ou qualquer outra coisa."
+              },
+              {
+                "t": "T",
+                "min": 100,
+                "q": "Conte algo em que o GAEB já ajudou você (na sua fé, numa decisão, numa amizade ou num momento difícil)."
               }
             ]
           }

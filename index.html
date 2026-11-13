@@ -185,6 +185,7 @@ function novoGradiente(){
 var verificar=function(){};
 function respondido(it){
   var r=S.r[it.id];
+  if(it.t==='T')return (typeof r==='string')&&r.trim().length>=(it.min||1);
   if(it.t==='M'){if(!Array.isArray(r)||!r.length)return false;if(r.indexOf('Outra')>=0&&!(S.o[it.id]||'').trim())return false;return true;}
   if(!r)return false;
   if(r==='Outra'&&!(S.o[it.id]||'').trim())return false;
@@ -275,12 +276,23 @@ function tela(){
   verificar();
   app.appendChild(el('div',{class:'split'},[side,qs]));
 }
-var TIPOS={F:'Com que frequência?',C:'O quanto você concorda?',S:'Escolha a que mais se parece com você',M:'Marque todas que combinam'};
+var TIPOS={T:'Escreva com as suas palavras',F:'Com que frequência?',C:'O quanto você concorda?',S:'Escolha a que mais se parece com você',M:'Marque todas que combinam'};
 function pergunta(it){
   var box=el('section',{class:'q'});
   var tag=TIPOS[it.t]; if(it.t==='M'&&it.max)tag='Marque até '+it.max;
   box.appendChild(el('div',{class:'tag'},[tag]));
   box.appendChild(el('p',{class:'t'},[it.q]));
+  if(it.t==='T'){
+    var min=it.min||100;
+    var area=el('textarea',{id:'t-'+it.id,'aria-label':it.q,placeholder:'Escreva aqui, com calma.',style:'min-height:150px'});
+    area.value=S.r[it.id]||'';
+    var cont=el('div',{class:'small'});
+    var atual=function(){var n=(area.value||'').trim().length;cont.textContent=n>=min?(n+' caracteres. Pode continuar.'):(n+' de '+min+' caracteres (mínimo).');};
+    area.addEventListener('input',function(){S.r[it.id]=area.value;salvar();atual();verificar();});
+    atual();
+    box.appendChild(area);box.appendChild(cont);
+    return box;
+  }
   if(it.t==='F'||it.t==='C'){
     var g=el('div',{class:'scale'});
     ESC[it.t].forEach(function(lab){
